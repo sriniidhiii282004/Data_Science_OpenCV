@@ -1,0 +1,137 @@
+from os import path
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+path="/content/elephant.jpg"
+image=cv2.imread(path)
+image_rgb=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+plt.figure(figsize=(10,8))
+plt.imshow(image_rgb)
+plt.title("Original Elephant iamge(RGB)")
+plt.axis("on")
+plt.show()
+print("Image shape:",image_rgb.shape)
+
+!pip install ipyevents ipywidgets
+from google.colab import output
+output.enable_custom_widget_manager()
+
+import cv2
+import numpy as np
+import ipywidgets as widgets
+from IPython.display import display
+from ipyevents import Event
+from PIL import Image
+from io import BytesIO
+
+//specific Coordinates by clicking on the image
+
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+# Convert full-size image to PNG bytes
+def array_to_png_bytes(arr):
+    img_pil = Image.fromarray(arr)
+    with BytesIO() as output_bytes:
+        img_pil.save(output_bytes, format='PNG')
+        return output_bytes.getvalue()
+
+# Create image widget with original size
+height, width, _ = image_rgb.shape
+png_bytes = array_to_png_bytes(image_rgb)
+
+image_widget = widgets.Image(
+    value=png_bytes,
+    format='png',
+    layout=widgets.Layout(width=f"{width}px", height=f"{height}px")
+)
+display(image_widget)
+
+# Setup event handler for clicks
+event = Event(source=image_widget, watched_events=['click'])
+def handle_event(event_data):
+    x = int(event_data['offsetX'])
+    y = int(event_data['offsetY'])
+    print(f"Clicked at: X={x}, Y={y}")
+
+event.on_dom_event(handle_event)
+
+//Rgb values of the specific coords
+
+sample_cords=[
+    (123,108),
+    (70,73),
+    (129,106)
+]
+sample_rgb_values=[]
+for coord in sample_cords:
+  y,x=coord
+  rgb=image_rgb[y,x]
+rgb=image_rgb[70,73]
+print(rgb)
+
+//RGb values of all the coordinates at once
+
+sample_cords=[
+    (123,108),
+    (70,73),
+    (129,106)
+]
+
+sample_rgb_values=[]
+for coord in sample_cords:
+  y,x=coord
+  rgb=sample_rgb_values.append(rgb)
+for i in range(len(sample_cords)):
+  coord=sample_cords[i]
+  rgb=sample_rgb_values[i]
+  print(f"P{i+1} at {coord} the rgb values is {rgb}")
+
+//Pointing out the coordinates on the image
+image_marked=image_rgb.copy()
+index = 1
+for i in range(len(sample_cords)):
+    coord = sample_cords[i]
+    y = coord[0]
+    x = coord[1]
+
+    cv2.circle(image_marked, (x, y), 10, (255, 0, 0), 2)
+
+    # Lets put some marking on the image
+    cv2.putText(image_marked, f"Point {index}", (x + 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+    index += 1
+
+plt.figure(figsize=(10, 8))
+plt.imshow(image_marked)
+plt.title("Original Elephant Image (RGB)")
+plt.axis("on")
+plt.show()
+
+//Creating our own elephant image with different colors
+lower_thresh = [47, 46,52]
+upper_thresh = [142,134, 155]
+
+height = image_rgb.shape[0]
+width = image_rgb.shape[1]
+
+elephant_detected = np.ones((height, width), dtype=np.uint8) * 255
+
+for y in range(height):
+    for x in range(width):
+        pixel = image_rgb[y, x]
+        r, g, b = pixel[0], pixel[1], pixel[2]
+
+        if (lower_thresh[0] <= r <= upper_thresh[0] and
+            lower_thresh[1] <= g <= upper_thresh[1] and
+            lower_thresh[2] <= b <= upper_thresh[2]):
+            elephant_detected[y, x] = 0
+        else:
+            elephant_detected[y, x] = 255
+
+plt.figure(figsize=(10, 8))
+plt.imshow(elephant_detected,cmap='gray')
+plt.title("Marked points on GajRāj")
+plt.axis("on")
+plt.show()
+
+from google.colab import drive
+drive.mount('/content/drive')
